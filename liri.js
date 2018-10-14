@@ -18,7 +18,7 @@ var userFunction = process.argv[2];
 var userInput = process.argv[3];
 
 // convert date to correct format for bandsintown using moment.js
-
+var date;
 // npm spotify documentation example
 
 
