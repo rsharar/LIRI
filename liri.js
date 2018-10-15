@@ -27,13 +27,18 @@ var date;
     // node liri.js concert-this <artist/band name here>
 function findConcert(){
     bandsintown.getArtistEventList(userInput, date).then(function(events) {
+    // if (err) {
+    //     console.log("No events for this artist.")
+    // }else{
       // return array of events
-      console.log(events);
+        // Name of the venue
+        console.log("Venue name: " + events[0].venue.name);
+        // Venue location
+        console.log("Venue location: " + events[10].venue.city + ", " + events[0].venue.region)
+        // Date of the Event (use moment to format this as "MM/DD/YYYY")
+        console.log(events[0])
     });
 }
-    //     Name of the venue
-    //     Venue location
-    //     Date of the Event (use moment to format this as "MM/DD/YYYY")
 // 2. spotify-this-song
 function findSong(){spotify.search({type: 'track', query: userInput, limit: 1}, function(err, data) {
     if (err) {
