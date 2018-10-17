@@ -18,10 +18,13 @@
   },
   "homepage": "https://github.com/rsharar/liri#readme",
   "dependencies": {
+    "bandsintown": "^1.0.1",
     "dotenv": "^6.1.0",
     "file-system": "^2.2.2",
+    "inquirer": "^6.2.0",
     "moment": "^2.22.2",
     "node-spotify-api": "^1.0.7",
+    "omdb": "^0.8.0",
     "request": "^2.88.0"
   }
 }
