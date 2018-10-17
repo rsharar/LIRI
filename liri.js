@@ -1,6 +1,10 @@
 // Require the .env file with access tokens
 require("dotenv").config();
 
+
+// ---- REQUEST -----
+var request = require('request');
+
 // ---- LINK TO KEYS.JS -----
 var keys = require("./keys.js");
 
@@ -9,9 +13,13 @@ var inquirer = require('inquirer');
 
 // --- LINK TO BANDS IN TOWN ---
 var bandsintown = require('bandsintown')('codingbootcamp');
+
 // ---- SPOTIFY -----
 var Spotify = require('node-spotify-api');
 var spotify = new Spotify(keys.spotify);
+
+// ---- OMDB -----
+var omdb = require('omdb');
 
 // store userInput to determine what function to call
 var userFunction = process.argv[2];
@@ -34,9 +42,9 @@ function findConcert(){
         // Name of the venue
         console.log("Venue name: " + events[0].venue.name);
         // Venue location
-        console.log("Venue location: " + events[10].venue.city + ", " + events[0].venue.region)
+        console.log("Venue location: " + events[0].venue.city + ", " + events[0].venue.region)
         // Date of the Event (use moment to format this as "MM/DD/YYYY")
-        console.log(events[0])
+        // console.log(events[0])
     });
 }
 // 2. spotify-this-song
@@ -62,6 +70,35 @@ function findSong(){spotify.search({type: 'track', query: userInput, limit: 1}, 
 }
 // 3. movie-this
     //node liri.js movie-this '<movie name here>'
+function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
+
+        // If there were no errors and the response code was 200 (i.e. the request was successful)...
+        if (!error && response.statusCode === 200) {
+            //    * Full Response
+            console.log(JSON.parse(body))
+            //    * Title of the movie.
+            console.log('Title: ' + JSON.parse(body).Title)
+            //    * Year the movie came out.
+            console.log('Year: ' + JSON.parse(body).Year)
+            //    * IMDB Rating of the movie.
+            console.log("The movie's IMDB rating is: " + JSON.parse(body).imdbRating);
+            //    * Rotten Tomatoes Rating of the movie.
+            console.log("The movie's RottenTomatoes rating is: " + JSON.parse(body).Ratings[1].Value);
+            //    * Country where the movie was produced.
+            console.log("Movie was produced in: " + JSON.parse(body).Country);
+            //    * Language of the movie.
+            console.log("Language: " + JSON.parse(body).Language);
+            //    * Plot of the movie.
+            console.log("Plot: " + JSON.parse(body).Plot);
+            //    * Actors in the movie
+            console.log("Actors: " + JSON.parse(body).Actors);
+        }
+      });
+
+    }
+
+
+
 // 4. do-what-it-says
     //node liri.js do-what-it-says
     //use the data in random.txt
@@ -96,6 +133,8 @@ switch (userFunction){
     case "spotify-this-song":
         findSong();
         break;
+    case "movie-this":
+        findMovie();
 }
 
 
