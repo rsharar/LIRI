@@ -21,16 +21,16 @@ var spotify = new Spotify(keys.spotify);
 // ---- OMDB -----
 var omdb = require('omdb');
 
+// ---- REQUIRE ---
+var fs = require("fs");
+
 // store userInput to determine what function to call
 var userFunction = process.argv[2];
 var userInput = process.argv[3];
 
 // convert date to correct format for bandsintown using moment.js
 var date;
-// npm spotify documentation example
 
-
-// four commands
 // 1. concert-this
     // node liri.js concert-this <artist/band name here>
 function findConcert(){
@@ -74,8 +74,6 @@ function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=s
 
         // If there were no errors and the response code was 200 (i.e. the request was successful)...
         if (!error && response.statusCode === 200) {
-            //    * Full Response
-            console.log(JSON.parse(body))
             //    * Title of the movie.
             console.log('Title: ' + JSON.parse(body).Title)
             //    * Year the movie came out.
@@ -96,10 +94,25 @@ function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=s
       });
 
     }
-
-
-
 // 4. do-what-it-says
+function readFile(){
+    fs.readFile('random.txt','utf8',function(error,data){
+        if (error){
+            return console.log(error)
+        }
+        console.log(data[1])
+        switch(data){
+            case "concert-this":
+                findConcert();
+                break;
+            case "spotify-this-song":
+                findSong();
+                break;
+            case "movie-this":
+                findMovie();
+    }
+})
+}
     //node liri.js do-what-it-says
     //use the data in random.txt
 
@@ -135,6 +148,8 @@ switch (userFunction){
         break;
     case "movie-this":
         findMovie();
+    case "do-what-it-says":
+        readFile();
 }
 
 
