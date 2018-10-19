@@ -75,14 +75,11 @@ function findConcert(){
     });
 }
 // 2. spotify-this-song
-function findSong(){spotify.search({type: 'track', query: userInput, limit: 1}, function(err, data) {
+function findSong(){spotify.search({type: 'track', query: input, limit: 1}, function(err, data) {
     if (err) {
-      return console.log('Error occurred: ' + err);
+      input = "The Sign"
+      findSong();
     }
-    // else if (userInput = ""){
-    //     // If no song is provided then your program will default to "The Sign" by Ace of Base.
-    //     console.log("The Sign by Ace of Base")
-    // }
     else {
         // Artist(s)
         console.log("Artist: " + data.tracks.items[0].album.artists[0].name);
