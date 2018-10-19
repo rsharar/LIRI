@@ -102,7 +102,10 @@ function findSong(){spotify.search({type: 'track', query: input, limit: 1}, func
 }
 // 3. movie-this
     //node liri.js movie-this '<movie name here>'
-function findMovie(){request("http://www.omdbapi.com/?t="+ input+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
+function findMovie(){
+    request("http://www.omdbapi.com/?t="+ input+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
+        // if error
+        console.log("Error: " + error);
         // If there were no errors and the response code was 200 (i.e. the request was successful)...
         if (!error && response.statusCode === 200) {
             //    * Title of the movie.
