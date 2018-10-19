@@ -26,7 +26,7 @@ var fs = require("fs");
 
 // store userInput to determine what function to call
 var userFunction = process.argv[2];
-var userInput = process.argv[3];
+var userInput = process.argv.splice(3).join(" ");
 
 // convert date to correct format for bandsintown using moment.js
 var date;
