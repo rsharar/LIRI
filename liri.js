@@ -1,12 +1,14 @@
 // Require the .env file with access tokens
 require("dotenv").config();
 
-
 // ---- REQUEST -----
 var request = require('request');
 
 // ---- LINK TO KEYS.JS -----
 var keys = require("./keys.js");
+
+// ---- MOMENT ----
+var moment = require("moment")
 
 // --- LINK TO INQUIRER ---
 var inquirer = require('inquirer');
@@ -24,26 +26,51 @@ var omdb = require('omdb');
 // ---- REQUIRE ---
 var fs = require("fs");
 
+
 // store userInput to determine what function to call
-var userFunction = process.argv[2];
-var userInput = process.argv.splice(3).join(" ");
+var command = process.argv[2];
+var input = process.argv.splice(3).join(" ");
 
 // convert date to correct format for bandsintown using moment.js
 var date;
 
+// Initial run
+cmdSelect();
+
+function cmdSelect(){
+    switch (command){
+        case "concert-this":
+            findConcert();
+            break;
+        case "spotify-this-song":
+            findSong();
+            break;
+        case "movie-this":
+            findMovie();
+        // 4. do-what-it-says
+        case "do-what-it-says":
+            fs.readFile('random.txt','utf8',function(error,data){
+                if (error){
+                    return console.log(error)
+                }
+                var dataArray = data.split(',')
+                command = dataArray[0]
+                input = dataArray[1]
+                cmdSwitch()            
+            })
+    }
+}    
+
 // 1. concert-this
     // node liri.js concert-this <artist/band name here>
 function findConcert(){
-    bandsintown.getArtistEventList(userInput, date).then(function(events) {
-    // if (err) {
-    //     console.log("No events for this artist.")
-    // }else{
-      // return array of events
-        // Name of the venue
-        console.log("Venue name: " + events[0].venue.name);
+    bandsintown.getArtistEventList(input, date).then(function(events) {
+        var events = events[0]
+        console.log("Venue name: " + events.venue.name);
         // Venue location
-        console.log("Venue location: " + events[0].venue.city + ", " + events[0].venue.region)
+        console.log("Venue location: " + events.venue.city + ", " + events.venue.region + events.venue.country)
         // Date of the Event (use moment to format this as "MM/DD/YYYY")
+        console.log("Date: " + moment(events.datetime.split('T')[0], 'YYY-MM-DD').format("MM/DD/YY"))
         // console.log(events[0])
     });
 }
@@ -94,25 +121,10 @@ function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=s
       });
 
     }
-// 4. do-what-it-says
-function readFile(){
-    fs.readFile('random.txt','utf8',function(error,data){
-        if (error){
-            return console.log(error)
-        }
-        console.log(data[1])
-        switch(data){
-            case "concert-this":
-                findConcert();
-                break;
-            case "spotify-this-song":
-                findSong();
-                break;
-            case "movie-this":
-                findMovie();
-    }
-})
-}
+
+    
+
+
     //node liri.js do-what-it-says
     //use the data in random.txt
 
@@ -139,18 +151,6 @@ function readFile(){
 // })
 
 
-switch (userFunction){
-    case "concert-this":
-        findConcert();
-        break;
-    case "spotify-this-song":
-        findSong();
-        break;
-    case "movie-this":
-        findMovie();
-    case "do-what-it-says":
-        readFile();
-}
 
 
 
