@@ -10,9 +10,6 @@ var keys = require("./keys.js");
 // ---- MOMENT ----
 var moment = require("moment")
 
-// --- LINK TO INQUIRER ---
-var inquirer = require('inquirer');
-
 // --- LINK TO BANDS IN TOWN ---
 var bandsintown = require('bandsintown')('codingbootcamp');
 
@@ -31,13 +28,13 @@ var fs = require("fs");
 var command = process.argv[2];
 var input = process.argv.splice(3).join(" ");
 
-// convert date to correct format for bandsintown using moment.js
+// global variable date for concert-this command
 var date;
 
 // Initial run
-cmdSelect();
+chooseCommand();
 
-function cmdSelect(){
+function chooseCommand(){
     switch (command){
         case "concert-this":
             findConcert();
@@ -47,16 +44,20 @@ function cmdSelect(){
             break;
         case "movie-this":
             findMovie();
-        // 4. do-what-it-says
         case "do-what-it-says":
+            // read random.txt to determine which command to execute
             fs.readFile('random.txt','utf8',function(error,data){
                 if (error){
                     return console.log(error)
                 }
+                // store data from random.txt in array
                 var dataArray = data.split(',')
+                // set 0th index = command name
                 command = dataArray[0]
+                // set 1st index = input
                 input = dataArray[1]
-                cmdSwitch()            
+                // execute chooseCommand
+                chooseCommand()            
             })
     }
 }    
@@ -64,15 +65,22 @@ function cmdSelect(){
 // 1. concert-this
     // node liri.js concert-this <artist/band name here>
 function findConcert(){
-    bandsintown.getArtistEventList(input, date).then(function(events) {
-        var events = events[0]
-        console.log("Venue name: " + events.venue.name);
-        // Venue location
-        console.log("Venue location: " + events.venue.city + ", " + events.venue.region + events.venue.country)
-        // Date of the Event (use moment to format this as "MM/DD/YYYY")
-        console.log("Date: " + moment(events.datetime.split('T')[0], 'YYY-MM-DD').format("MM/DD/YY"))
-        // console.log(events[0])
-    });
+    var bandsqueryURL = "https://rest.bandsintown.com/artists/" + input + "/events?app_id=codingbootcamp"
+    request(bandsqueryURL, function(error, response, body){
+        //if error occurs
+        console.log("Error: " + error);
+        // if no error and statuscode = 200
+        if (!error && response.statusCode === 200){
+            var eventsObj = JSON.parse(body)
+                for (var i in eventsObj){
+                    console.log("Venue name: " + eventsObj[i].venue.name);
+                    // Venue location
+                    console.log("Venue location: " + eventsObj[i].venue.city + ", " + eventsObj[i].venue.region + eventsObj[i].venue.country)
+                    // Date of the Event (use moment to format this as "MM/DD/YYYY")
+                    console.log("Date: " + moment(eventsObj[i].datetime.split('T')[0], 'YYY-MM-DD').format("MM/DD/YY"))
+                }
+        }
+    })
 }
 // 2. spotify-this-song
 function findSong(){spotify.search({type: 'track', query: input, limit: 1}, function(err, data) {
@@ -94,8 +102,7 @@ function findSong(){spotify.search({type: 'track', query: input, limit: 1}, func
 }
 // 3. movie-this
     //node liri.js movie-this '<movie name here>'
-function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
-
+function findMovie(){request("http://www.omdbapi.com/?t="+ input+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
         // If there were no errors and the response code was 200 (i.e. the request was successful)...
         if (!error && response.statusCode === 200) {
             //    * Title of the movie.
@@ -116,39 +123,5 @@ function findMovie(){request("http://www.omdbapi.com/?t="+ userInput+"&y=&plot=s
             console.log("Actors: " + JSON.parse(body).Actors);
         }
       });
-
-    }
-
-    
-
-
-    //node liri.js do-what-it-says
-    //use the data in random.txt
-
-// inquirer.prompt([
-//     {
-//         type: 'list',
-//         message: 'Choose your version.',
-//         name: 'userInput',
-//         choices: ['concert-this','spotify-this-song','movie-this','do-what-it-says']
-//     }
-// ]).then(function(res){
-//     if (res.userInput == 'concert-this'){
-        
-//     }
-//     else if (res.userInput == 'spotify-this-song'){
-        
-//     }
-//     else if (res.userInput == 'movie-this'){
-        
-//     } 
-//     else if (res.userInput == 'do-what-it-says'){
-
-//     }
-// })
-
-
-
-
-
+}
 
